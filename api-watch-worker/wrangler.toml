@@ -1,0 +1,28 @@
+name = "api-watch-worker"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "api-watch-db"
+database_id = "7413b9f6-32b1-4fbf-a260-eba96c44b873"
+
+# KV Namespace for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "fbb1e03fc6e049a88862b4ed67345a25"
+
+# R2 for spec storage
+[[r2_buckets]]
+binding = "SPECS"
+bucket_name = "api-watch-specs"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+
+# Analytics
+analytics_engine_datasets = [
+	{ binding = "ANALYTICS" }
+]
