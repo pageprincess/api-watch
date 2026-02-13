@@ -1,168 +1,170 @@
-# APIWatch
+# APIWatch 🕐
 
-**Monitor API breaking changes and get alerted before your app breaks**
+> Monitor API breaking changes and get alerted before your app breaks
 
-![GitHub stars](https://img.shields.io/github/stars/pageprincess/api-watch?style=social)
-![License](https://img.shields.io/github/license/pageprincess/api-watch)
-![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![SvelteKit](https://img.shields.io/badge/SvelteKit-FF3E00?logo=svelte&logoColor=white)](https://kit.svelte.dev/)
 
-## Overview
+**APIWatch** is an open-source API monitoring service that automatically detects breaking changes in OpenAPI/Swagger specifications and alerts you before your integration breaks.
 
-APIWatch is an open-source API breaking change detector. It fetches OpenAPI specifications, diffs them against previous versions, and alerts you when breaking changes are detected.
+## 🎯 Problem It Solves
 
-**The Problem**: At 3 AM, Stripe silently deprecated a field. Our payments broke. 4 hours of debugging later, we found the root cause—no announcement, no changelog, just a silent breaking change.
+APIs change constantly. When a provider removes a required parameter or deprecates an endpoint, your app breaks. APIWatch:
 
-**The Solution**: APIWatch monitors OpenAPI specs and detects breaking changes before they impact your production.
+- **Detects breaking changes** in OpenAPI/Swagger specs automatically
+- **Alerts you instantly** via Email or Slack
+- **Tracks version history** so you can see what changed
+- **Monitors hourly** without manual intervention
 
-## Quick Start (5 Minutes)
+## ✨ Features
+
+### Breaking Change Detection
+
+| Severity | What We Catch |
+|----------|---------------|
+| **Critical** | Removed endpoints, deleted HTTP methods, removed required parameters |
+| **Major** | Removed response codes, removed required properties in schemas |
+| **Minor** | Non-required property changes, description updates |
+
+### Pre-Built Templates
+
+Get started in seconds with 10+ popular API templates:
+
+- 💳 **Stripe** - Payments
+- 🐙 **GitHub** - Development
+- 💼 **Slack** - Communication
+- 🤖 **OpenAI** - AI/ML
+- 📞 **Twilio** - Communication
+- 📧 **SendGrid** - Email
+- 🛍️ **Shopify** - E-commerce
+- 🎮 **Discord** - Communication
+- 📝 **Notion** - Productivity
+- 📊 **Linear** - Productivity
+
+## 🚀 Quick Start
+
+### Option 1: Deploy to Cloudflare (Recommended)
 
 ```bash
 # Clone the repository
 git clone https://github.com/pageprincess/api-watch.git
-cd api-watch
+cd api-watch/api-watch-worker
 
 # Install dependencies
 npm install
 
-# Run detection engine (example)
-npm run detect -- --url=https://api.stripe.com/openapi.yaml
+# Create D1 database and KV namespace
+npx wrangler d1 create api-watch-db
+npx wrangler kv namespace create API_WATCH_CACHE
+
+# Update wrangler.toml with your IDs
+# Then deploy
+npx wrangler pages deploy .svelte-kit/output --project-name=api-watch
 ```
 
-**What happens**: APIWatch fetches the spec, compares it to the previous version, and reports any breaking changes.
+See [DEPLOY.md](DEPLOY.md) for detailed deployment instructions.
 
-## Why APIWatch?
+### Option 2: Use as a Library
 
-- **Prevent Production Incidents**: Know about API changes before your users do
-- **Reduce Debugging Time**: Instantly identify if a third-party API change broke your integration
-- **Open Source**: Full transparency—run it yourself, fork it, customize it
-- **API Provider Agnostic**: Works with any REST API that exposes an OpenAPI/Swagger spec
+```typescript
+import { detectBreakingChanges, fetchSpec } from 'api-watcher';
 
-## Planned Features
+// Monitor any OpenAPI spec
+const oldSpec = await fetchSpec('https://api.example.com/openapi.json');
+const newSpec = await fetchSpec('https://api.example.com/openapi.json');
 
-### Core Monitoring
-- [ ] Scheduled API specification monitoring (OpenAPI/Swagger, GraphQL schema)
-- [ ] Breaking change detection engine
-- [ ] Semantic versioning analysis
-- [ ] Response structure validation
-- [ ] Endpoint deprecation tracking
+const changes = detectBreakingChanges(oldSpec, newSpec);
+if (changes.critical.length > 0) {
+  console.alert('Critical breaking changes detected!');
+}
+```
 
-### Alerting
-- [ ] Email notifications
-- [ ] Slack integration
-- [ ] Webhook support
-- [ ] Custom alert rules (filter by severity, endpoint, change type)
-- [ ] Alert aggregation and digest mode
+## 📊 How It Works
 
-### Dashboard & Visibility
-- [ ] Web dashboard for monitored APIs
-- [ ] Change history and timeline
-- [ ] API health status overview
-- [ ] Breaking change impact analysis
+```
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│  Cron Trigger   │────▶│  Spec Fetcher   │────▶│  Breaking Change │
+│  (Every Hour)   │     │  (OpenAPI/Swagger)   │  Detector     │
+└─────────────────┘     └─────────────────┘     └────────┬────────┘
+                                                          │
+                                                          ▼
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│   Alert Service │◀────│  Database       │◀────│   Severity      │
+│ (Email/Slack)   │     │  (D1 + KV)      │     │   Classifier    │
+└─────────────────┘     └─────────────────┘     └─────────────────┘
+```
 
-### Integrations
-- [ ] GitHub (track OpenAPI spec changes in repos)
-- [ ] npm/package registries (monitor package API changes)
-- [ ] Custom API endpoints
-- [ ] API gateway integration (AWS API Gateway, Cloudflare)
+## 🛠 Tech Stack
 
-## Roadmap
+- **Runtime**: Cloudflare Workers (Edge computing)
+- **Framework**: SvelteKit
+- **Language**: TypeScript
+- **Database**: Cloudflare D1 (SQLite)
+- **Cache**: Cloudflare KV
+- **Alerts**: Resend (Email), Slack Webhooks
 
-### Phase 1: MVP
-- Basic OpenAPI spec monitoring
-- Breaking change detection for REST APIs
-- Email alerts
-- Simple web UI
+## 📁 Project Structure
 
-### Phase 2: Enhanced Monitoring
-- GraphQL schema monitoring
-- Slack/webhook integrations
-- Historical change tracking
-- Multiple environment support
+```
+api-watch-worker/
+├── src/
+│   ├── lib/
+│   │   ├── spec-fetcher.ts      # Fetch OpenAPI specs
+│   │   ├── breaking-detector.ts  # Detect breaking changes
+│   │   ├── database.ts           # D1/KV operations
+│   │   └── alert-service.ts      # Email/Slack alerts
+│   ├── routes/
+│   │   ├── api/check/+server.ts  # Cron endpoint
+│   │   ├── api/monitored/+server.ts  # Manage APIs
+│   │   └── api/templates/+server.ts   # API templates
+│   └── routes/
+│       └── +page.svelte         # Landing page
+├── schema.sql                   # Database schema
+└── wrangler.toml                # Cloudflare config
+```
 
-### Phase 3: Enterprise Features
-- API gateway integrations
-- Custom alerting rules engine
-- SSO and team management
-- API usage analytics
-
-## Technology Stack
-
-See [docs/tech-stack.md](docs/tech-stack.md) for detailed technical decisions.
-
-## Getting Started (When Ready)
+## 🧪 Development
 
 ```bash
 # Install dependencies
 npm install
 
-# Set up environment variables
-cp .env.example .env
-
 # Run development server
 npm run dev
+
+# Run tests (when available)
+npm test
+
+# Type checking
+npm run check
 ```
 
-## License
+## 🤝 Contributing
 
-MIT License - see [LICENSE](LICENSE) for details.
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
 
-## Current Status
-
-**Active Development**: This is an open-source project in active development. Core detection engine is implemented (1,388 lines of TypeScript).
-
-**What's Working**:
-- OpenAPI spec fetching from URLs
-- Breaking change detection (12+ rules)
-- Email/Slack alerting
-- Database schema (D1)
-
-**What's Next**:
-- Docker image for self-hosting
-- CLI tool for local checking
-- Web dashboard (in progress)
-
-## Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-**Good First Issues**:
-- Add GraphQL schema support
-- Create Docker image
-- Improve detection accuracy
+Areas where we'd love help:
 - Add more API templates
+- Improve breaking change detection accuracy
+- Add more alert channels (Discord, Teams, etc.)
+- UI/UX improvements for the landing page
 
-## Roadmap
-
-### Phase 1: Core Detection (Current)
-- OpenAPI spec fetching
-- Breaking change detection engine
-- Email/Slack alerting
-
-### Phase 2: Self-Hosting
-- Docker image
-- CLI tool
-- Configuration via YAML
-
-### Phase 3: Web Dashboard
-- User authentication
-- Monitor management UI
-- Change history timeline
-
-### Phase 4: Advanced Features
-- GraphQL schema support
-- Webhook notifications
-- Custom alert rules
-
-## License
+## 📝 License
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## Links
+## 🔗 Links
 
-- GitHub: https://github.com/pageprincess/api-watch
-- Issues: https://github.com/pageprincess/api-watch/issues
-- Discussions: https://github.com/pageprincess/api-watch/discussions
+- [GitHub Repository](https://github.com/pageprincess/api-watch)
+- [Issues](https://github.com/pageprincess/api-watch/issues)
+- [Discussions](https://github.com/pageprincess/api-watch/discussions)
+- [Launch Discussion](https://github.com/pageprincess/api-watch/discussions/1)
+
+## 🌟 Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=pageprincess/api-watch&type=Date)](https://star-history.com/#pageprincess/api-watch&Date)
 
 ---
 
-*Built with love by Auto Company - Fully Autonomous AI Company*
+**Built with ❤️ by [Auto Company](https://github.com/pageprincess/auto-company)** - *A fully autonomous AI company experiment*
