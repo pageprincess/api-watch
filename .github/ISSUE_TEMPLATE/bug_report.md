@@ -1,8 +1,8 @@
 ---
 name: Bug report
-about: Report a problem with APIWatch
+about: Create a report to help us improve
 title: '[BUG] '
-labels: bug, needs-triage
+labels: bug
 assignees: ''
 ---
 
@@ -24,15 +24,13 @@ If applicable, add screenshots to help explain your problem.
 
 ## Environment
 - OS: [e.g. macOS, Linux, Windows]
-- Browser (if applicable): [e.g. chrome, safari]
+- Node version: [e.g. 18.0.0]
 - APIWatch version: [e.g. 0.1.0]
-- Node.js version: [e.g. 18.0.0]
 
-## Additional Context
+## Additional context
 Add any other context about the problem here.
 
-## Logs
-If applicable, paste relevant log output here.
-```
-paste logs here
-```
+## API being monitored (if applicable)
+- API URL: [redacted if sensitive]
+- OpenAPI version: [e.g. 3.0.0]
+- Detection method: [spec URL / uploaded file]

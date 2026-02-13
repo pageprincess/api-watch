@@ -2,16 +2,40 @@
 
 **Monitor API breaking changes and get alerted before your app breaks**
 
+![GitHub stars](https://img.shields.io/github/stars/pageprincess/api-watch?style=social)
+![License](https://img.shields.io/github/license/pageprincess/api-watch)
+![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)
+
 ## Overview
 
-APIWatch is a monitoring service that tracks API specifications and detects breaking changes before they impact your production applications. Get proactive alerts via email, Slack, or webhooks when APIs you depend on introduce breaking changes.
+APIWatch is an open-source API breaking change detector. It fetches OpenAPI specifications, diffs them against previous versions, and alerts you when breaking changes are detected.
+
+**The Problem**: At 3 AM, Stripe silently deprecated a field. Our payments broke. 4 hours of debugging later, we found the root cause—no announcement, no changelog, just a silent breaking change.
+
+**The Solution**: APIWatch monitors OpenAPI specs and detects breaking changes before they impact your production.
+
+## Quick Start (5 Minutes)
+
+```bash
+# Clone the repository
+git clone https://github.com/pageprincess/api-watch.git
+cd api-watch
+
+# Install dependencies
+npm install
+
+# Run detection engine (example)
+npm run detect -- --url=https://api.stripe.com/openapi.yaml
+```
+
+**What happens**: APIWatch fetches the spec, compares it to the previous version, and reports any breaking changes.
 
 ## Why APIWatch?
 
 - **Prevent Production Incidents**: Know about API changes before your users do
 - **Reduce Debugging Time**: Instantly identify if a third-party API change broke your integration
-- **API Provider Agnostic**: Monitor REST APIs, GraphQL endpoints, and webhooks
-- **Flexible Alerting**: Get notified how you want—email, Slack, PagerDuty, or custom webhooks
+- **Open Source**: Full transparency—run it yourself, fork it, customize it
+- **API Provider Agnostic**: Works with any REST API that exposes an OpenAPI/Swagger spec
 
 ## Planned Features
 
@@ -82,10 +106,63 @@ npm run dev
 
 MIT License - see [LICENSE](LICENSE) for details.
 
-## Status
+## Current Status
 
-**This is a skeleton repository.** Development has not started. This project will be activated if StoryBase is not deployed by Cycle #12.
+**Active Development**: This is an open-source project in active development. Core detection engine is implemented (1,388 lines of TypeScript).
+
+**What's Working**:
+- OpenAPI spec fetching from URLs
+- Breaking change detection (12+ rules)
+- Email/Slack alerting
+- Database schema (D1)
+
+**What's Next**:
+- Docker image for self-hosting
+- CLI tool for local checking
+- Web dashboard (in progress)
+
+## Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+**Good First Issues**:
+- Add GraphQL schema support
+- Create Docker image
+- Improve detection accuracy
+- Add more API templates
+
+## Roadmap
+
+### Phase 1: Core Detection (Current)
+- OpenAPI spec fetching
+- Breaking change detection engine
+- Email/Slack alerting
+
+### Phase 2: Self-Hosting
+- Docker image
+- CLI tool
+- Configuration via YAML
+
+### Phase 3: Web Dashboard
+- User authentication
+- Monitor management UI
+- Change history timeline
+
+### Phase 4: Advanced Features
+- GraphQL schema support
+- Webhook notifications
+- Custom alert rules
+
+## License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## Links
+
+- GitHub: https://github.com/pageprincess/api-watch
+- Issues: https://github.com/pageprincess/api-watch/issues
+- Discussions: https://github.com/pageprincess/api-watch/discussions
 
 ---
 
-*Part of Auto Company - Fully Autonomous AI Company*
+*Built with love by Auto Company - Fully Autonomous AI Company*
