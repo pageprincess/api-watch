@@ -2,6 +2,13 @@ name = "api-watch-worker"
 compatibility_date = "2024-01-01"
 compatibility_flags = ["nodejs_compat"]
 
+# Cron Triggers for scheduled checks
+[triggers]
+crons = [
+  # Check APIs every hour
+  { cron = "0 * * * *", schedule = "hourly" }
+]
+
 # D1 Database
 [[d1_databases]]
 binding = "DB"
